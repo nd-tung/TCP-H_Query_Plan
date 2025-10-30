@@ -1,0 +1,75 @@
+digraph TPC_H_Q3_Plan {
+    // --- Global Settings ---
+    rankdir=TB;
+    nodesep=0.8; 
+    ranksep=1.2;
+    graph [fontname="DejaVu Sans", fontsize=18];
+    node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=40, penwidth=1.6, margin=0.2];
+    edge  [arrowhead=normal, penwidth=1.4, color="#333333"];
+
+    // --- 1) Base Table Scans ---
+    node [fillcolor="#F1E0A6"];
+    C [label=<<B>Scan</B>(<FONT FACE="monospace">customer</FONT>)>];
+    O [label=<<B>Scan</B>(<FONT FACE="monospace">orders</FONT>)>];
+    L [label=<<B>Scan</B>(<FONT FACE="monospace">lineitem</FONT>)>];
+
+    // --- 2) Filter + Project on Each Base ---
+    node [fillcolor="#CFECCD"];
+    C1 [label=<<B>&sigma;</B><sub>c_mktsegment = 'BUILDING'</sub><BR/>
+        <B>&pi;</B><sub>c_custkey</sub>
+    >];
+    
+    O1 [label=<<B>&sigma;</B><sub>o_orderdate &lt; DATE '1995-03-15'</sub><BR/>
+        <B>&pi;</B><sub>o_orderkey, o_custkey, o_orderdate, o_shippriority</sub>
+    >];
+    
+    L1 [label=<<B>&sigma;</B><sub>l_shipdate &gt; DATE '1995-03-15'</sub><BR/>
+        <B>&pi;</B><sub>l_orderkey, l_extendedprice, l_discount</sub>
+    >];
+
+    // --- 3) Joins ---
+    node [fillcolor="#E6F3E6"];
+    JCO [label=<<B>⋈</B><sub>c_custkey = o_custkey</sub><BR/>
+        <B>&pi;</B><sub>o_orderkey, o_orderdate, o_shippriority</sub>
+    >];
+    
+    J [label=<<B>⋈</B><sub>o_orderkey = l_orderkey</sub><BR/>
+        <B>&pi;</B><sub>o_orderkey, o_orderdate, o_shippriority, l_extendedprice, l_discount</sub>
+    >];
+
+    // --- 4) Extended Projection (Compute Revenue) ---
+    node [fillcolor="#D9EAF3"];
+    E [label=<<B>&pi;</B> (Extended)<BR/>
+        <FONT POINT-SIZE="35" FACE="monospace">revenue = l_extendedprice &middot; (1 - l_discount)</FONT><BR/>
+        <B>&pi;</B><sub>o_orderkey, o_orderdate, o_shippriority, revenue</sub>
+    >];
+
+    // --- 5) Grouping & Aggregation ---
+    node [fillcolor="#C8B5E6"];
+    G [label=<<B>&gamma;</B><sub>o_orderkey, o_orderdate, o_shippriority</sub><BR/>
+        <FONT POINT-SIZE="35" FACE="monospace">revenue = SUM(revenue)</FONT>
+    >];
+
+    // --- 6) Sort ---
+    node [fillcolor="#E9B9B1"];
+    Sort [label=<<B>&tau;</B><sub>revenue DESC, o_orderdate ASC</sub>>];
+
+    // --- Define Edges (Flow) ---
+    C -> C1;
+    O -> O1;
+    L -> L1;
+    
+    C1 -> JCO;
+    O1 -> JCO;
+    
+    JCO -> J;
+    L1 -> J;
+    
+    J -> E;
+    E -> G;
+    G -> Sort;
+
+    // --- NEW: Layout Hints to prevent crowding ---
+    { rank=same; C; O; L; }
+    { rank=same; C1; O1; L1; }
+}

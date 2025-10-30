@@ -1,0 +1,65 @@
+// TPC-H Q13 Relational Algebra Query Plan (UTF-8 encoding!)
+digraph Q13 {
+  rankdir=TB;
+  nodesep=0.8; 
+  ranksep=1.2;
+  graph [fontname="DejaVu Sans", fontsize=18];
+  node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=16, penwidth=1.6, margin=0.2];
+  edge  [arrowhead=normal, penwidth=1.4, color="#333333"];
+
+  // --- Base Table Scans ---
+  node [fillcolor="#F1E0A6"];
+  customer [label=< <B>Scan</B>(<FONT FACE="monospace">customer</FONT>) >];
+  orders [label=< <B>Scan</B>(<FONT FACE="monospace">orders</FONT>) >];
+
+  // --- Filter Orders ---
+  node [fillcolor="#CFECCD"];
+  filter_orders [label=< 
+      <B>&sigma;</B><sub>o_comment NOT LIKE '%special%requests%'</sub>
+    >];
+
+  // --- Left Outer Join ---
+  node [fillcolor="#E6F3E6"];
+  left_join [label=< 
+      <B>⟕</B><sub>c_custkey = o_custkey</sub>
+    >];
+
+  // --- First Aggregation (Count orders per customer) ---
+  node [fillcolor="#C8B5E6"];
+  agg1 [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD ALIGN="CENTER"><B>&gamma;</B><sub>c_custkey</sub></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="CENTER"><FONT POINT-SIZE="14" FACE="monospace">c_count = COUNT(o_orderkey)</FONT></TD>
+      </TR>
+    </TABLE>
+  >];
+
+  // --- Second Aggregation (Count customers per order count) ---
+  node [fillcolor="#C8B5E6"];
+  agg2 [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD ALIGN="CENTER"><B>&gamma;</B><sub>c_count</sub></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="CENTER"><FONT POINT-SIZE="14" FACE="monospace">custdist = COUNT(*)</FONT></TD>
+      </TR>
+    </TABLE>
+  >];
+
+  // --- Sort ---
+  node [fillcolor="#E9B9B1"];
+  sort [label=< <B>&tau;</B><sub>custdist DESC, c_count DESC</sub> >];
+
+  // --- Flow ---
+  customer -> left_join;
+  orders -> filter_orders;
+  filter_orders -> left_join;
+  
+  left_join -> agg1;
+  agg1 -> agg2;
+  agg2 -> sort;
+}

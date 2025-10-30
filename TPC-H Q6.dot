@@ -1,0 +1,30 @@
+// TPC-H Q6 Relational Algebra Query Plan (UTF-8 encoding!)
+digraph Q6 {
+  rankdir=TB;
+  nodesep=0.8; 
+  ranksep=1.2;
+  graph [fontname="DejaVu Sans", fontsize=18];
+  node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=16, penwidth=1.6, margin=0.2];
+  edge  [arrowhead=normal, penwidth=1.4, color="#333333"];
+
+  scan [label=< <B>Scan</B>(<FONT FACE="monospace">lineitem</FONT>) >, 
+        fillcolor="#F1E0A6"];
+
+  filter [label=< 
+      <B>&sigma;</B><sub>l_shipdate &ge; '1994-01-01' &and;</sub><BR ALIGN="LEFT"/>
+      <sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_shipdate &lt; '1995-01-01' &and;</sub><BR ALIGN="LEFT"/>
+      <sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_discount BETWEEN 0.05 AND 0.07 &and;</sub><BR ALIGN="LEFT"/>
+      <sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_quantity &lt; 24</sub>
+    >, fillcolor="#CFECCD"];
+
+  project [label=<
+      <B>&pi;</B><sub>l_extendedprice, l_discount</sub>
+    >, fillcolor="#D9EAF3"];
+
+  agg [label=<
+      <B>&gamma;</B><BR/>
+      <FONT POINT-SIZE="14" FACE="monospace">total_revenue = SUM(l_extendedprice &middot; l_discount)</FONT>
+    >, fillcolor="#C8B5E6"];
+
+  scan -> filter -> project -> agg;
+}

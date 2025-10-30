@@ -1,0 +1,98 @@
+// TPC-H Q9 Relational Algebra Query Plan (UTF-8 encoding!)
+digraph Q9 {
+  rankdir=TB;
+  nodesep=0.8; 
+  ranksep=1.2;
+  graph [fontname="DejaVu Sans", fontsize=18];
+  node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=40, penwidth=1.6, margin=0.2];
+  edge  [arrowhead=normal, penwidth=1.4, color="#333333"];
+
+  // --- Base Table Scans ---
+  node [fillcolor="#F1E0A6"];
+  part [label=< <B>Scan</B>(<FONT FACE="monospace">part</FONT>) >];
+  lineitem [label=< <B>Scan</B>(<FONT FACE="monospace">lineitem</FONT>) >];
+  orders [label=< <B>Scan</B>(<FONT FACE="monospace">orders</FONT>) >];
+  partsupp [label=< <B>Scan</B>(<FONT FACE="monospace">partsupp</FONT>) >];
+  supplier [label=< <B>Scan</B>(<FONT FACE="monospace">supplier</FONT>) >];
+  nation [label=< <B>Scan</B>(<FONT FACE="monospace">nation</FONT>) >];
+
+  // --- Filter Part ---
+  node [fillcolor="#CFECCD"];
+  filter_part [label=< <B>&sigma;</B><sub>p_name LIKE '%green%'</sub> >];
+
+  // --- Joins ---
+  node [fillcolor="#E6F3E6"];
+  join1 [label=< <B>⋈</B><sub>p_partkey = l_partkey</sub> >];
+  join2 [label=< <B>⋈</B><sub>l_orderkey = o_orderkey</sub> >];
+  join3 [label=< <B>⋈</B><sub>l_partkey = ps_partkey AND l_suppkey = ps_suppkey</sub> >];
+  join4 [label=< <B>⋈</B><sub>ps_suppkey = s_suppkey</sub> >];
+  join5 [label=< <B>⋈</B><sub>s_nationkey = n_nationkey</sub> >];
+
+  // --- Extended Projection ---
+  node [fillcolor="#D9EAF3"];
+  project [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" ALIGN="LEFT">
+      <TR>
+        <TD ALIGN="CENTER" COLSPAN="2"><B>&pi;</B> (Extended)</TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="35" FACE="monospace">nation</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="35" FACE="monospace">&nbsp;= n_name</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="35" FACE="monospace">o_year</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="35" FACE="monospace">&nbsp;= EXTRACT(year FROM o_orderdate)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="35" FACE="monospace">amount</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="35" FACE="monospace">&nbsp;= l_extendedprice * (1 - l_discount)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT">&nbsp;</TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="35" FACE="monospace">&nbsp;&nbsp;&nbsp;- ps_supplycost * l_quantity</FONT></TD>
+      </TR>
+    </TABLE>
+  >];
+
+  // --- Aggregation (Updated to Table) ---
+  node [fillcolor="#C8B5E6"];
+  agg [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD ALIGN="CENTER"><B>&gamma;</B><sub>nation, o_year</sub></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="CENTER"><FONT POINT-SIZE="16" FACE="monospace">sum_profit = SUM(amount)</FONT></TD>
+      </TR>
+    </TABLE>
+  >];
+
+  // --- Sort ---
+  node [fillcolor="#E9B9B1"];
+  sort [label=< <B>&tau;</B><sub>nation ASC, o_year DESC</sub> >];
+
+  // --- Flow ---
+  part -> filter_part;
+  
+  filter_part -> join1;
+  lineitem -> join1;
+  
+  join1 -> join2;
+  orders -> join2;
+  
+  join2 -> join3;
+  partsupp -> join3;
+  
+  join3 -> join4;
+  supplier -> join4;
+  
+  join4 -> join5;
+  nation -> join5;
+  
+  join5 -> project;
+  project -> agg;
+  agg -> sort;
+
+  // --- Layout Hints ---
+  { rank=same; part; lineitem; orders; partsupp; supplier; nation; }
+}

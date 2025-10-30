@@ -1,0 +1,65 @@
+// TPC-H Q1 Relational Algebra Query Plan (UTF-8 encoding!)
+digraph Q1 {
+  rankdir=TB;
+  nodesep=0.8; ranksep=1.2;
+  graph [fontname="DejaVu Sans", fontsize=18];
+  node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=16, penwidth=1.6, margin=0.2];
+  edge  [arrowhead=normal, penwidth=1.4, color="#333333"];
+
+  scan [label=< <B>Scan</B>(<FONT FACE="monospace">lineitem</FONT>) >, 
+        fillcolor="#F1E0A6"];
+
+  filter [label=< 
+      <B>&sigma;</B><sub>l_shipdate &le; DATE '1998-12-01' &minus; 90d</sub>
+    >, fillcolor="#CFECCD"];
+
+  project [label=<
+      <B>&pi;</B><sub>l_returnflag, l_linestatus, l_quantity, l_extendedprice, l_discount, l_tax</sub>
+    >, fillcolor="#D9EAF3"];
+
+  agg [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" ALIGN="LEFT">
+      <TR>
+        <TD ALIGN="CENTER" COLSPAN="2"><B>&gamma;</B><sub>l_returnflag, l_linestatus</sub></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">sum_qty</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= SUM(l_quantity)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">sum_base_price</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= SUM(l_extendedprice)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">sum_disc_price</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= SUM(l_extendedprice * (1 - l_discount))</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">sum_charge</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= SUM(l_extendedprice * (1 - l_discount) * (1 + l_tax))</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">avg_qty</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= AVG(l_quantity)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">avg_price</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= AVG(l_extendedprice)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">avg_disc</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= AVG(l_discount)</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="RIGHT"><FONT POINT-SIZE="14" FACE="monospace">count_order</FONT></TD>
+        <TD ALIGN="LEFT"><FONT POINT-SIZE="14" FACE="monospace">&nbsp;= COUNT(*)</FONT></TD>
+      </TR>
+    </TABLE>
+  >, fillcolor="#C8B5E6"];
+
+  sort [label=< 
+      <B>&tau;</B><sub>l_returnflag, l_linestatus</sub>
+    >, fillcolor="#E9B9B1"];
+
+  scan -> filter -> project -> agg -> sort;
+}

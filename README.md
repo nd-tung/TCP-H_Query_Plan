@@ -2,6 +2,8 @@
 
 This repository contains relational algebra visualizations for selected TPC-H benchmark queries.
 
+**Note:** Query plans flow from bottom to top - table scans are at the bottom, and final results are at the top.
+
 ## Query Plans
 
 ### TPC-H Q1: Pricing Summary Report Query

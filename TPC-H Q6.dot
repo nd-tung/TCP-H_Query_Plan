@@ -1,6 +1,6 @@
 // TPC-H Q6 Relational Algebra Query Plan (UTF-8 encoding!)
 digraph Q6 {
-  rankdir=TB;
+  rankdir=BT;
   nodesep=0.8; 
   ranksep=1.2;
   graph [fontname="DejaVu Sans", fontsize=18];

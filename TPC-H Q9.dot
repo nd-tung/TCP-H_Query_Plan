@@ -1,6 +1,6 @@
 // TPC-H Q9 Relational Algebra Query Plan (UTF-8 encoding!)
 digraph Q9 {
-  rankdir=TB;
+  rankdir=BT;
   nodesep=0.8; 
   ranksep=1.2;
   graph [fontname="DejaVu Sans", fontsize=18];
@@ -62,7 +62,7 @@ digraph Q9 {
         <TD ALIGN="CENTER"><B>&gamma;</B><sub>nation, o_year</sub></TD>
       </TR>
       <TR>
-        <TD ALIGN="CENTER"><FONT POINT-SIZE="16" FACE="monospace">sum_profit = SUM(amount)</FONT></TD>
+        <TD ALIGN="CENTER"><FONT POINT-SIZE="35" FACE="monospace">sum_profit = SUM(amount)</FONT></TD>
       </TR>
     </TABLE>
   >];

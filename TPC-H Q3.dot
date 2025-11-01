@@ -1,6 +1,6 @@
 digraph TPC_H_Q3_Plan {
     // --- Global Settings ---
-    rankdir=TB;
+    rankdir=BT;
     nodesep=0.8; 
     ranksep=1.2;
     graph [fontname="DejaVu Sans", fontsize=18];

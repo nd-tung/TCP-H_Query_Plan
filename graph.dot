@@ -1,6 +1,6 @@
 // TPC-H Q1 Relational Algebra Query Plan (UTF-8 encoding!)
 digraph Q1 {
-  rankdir=TB;
+  rankdir=BT;
   nodesep=0.8; ranksep=1.2;
   graph [fontname="DejaVu Sans", fontsize=18];
   node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=16, penwidth=1.6, margin=0.2];
